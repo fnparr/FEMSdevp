@@ -35,9 +35,9 @@ setGeneric(name = "Environment",
 setMethod(f = "Environment", signature = c(),
           definition = function(){
               outenv <- new("Environment")
-              # outenv$serverURL <- "https://demo.actusfrf.org:8080/"
+              outenv$serverURL <- "https://demo.actusfrf.org:8080/"
               #  could also be
-              outenv$serverURL <- "http://ractus.ch:8080/"
+                # outenv$serverURL <- "http://ractus.ch:8080/"
               Date_Term_Names <- c(
                   "statusDate","contractDealDate","initialExchangeDate",
                   "maturityDate","cycleAnchorDateOfInterestCalculationBase",
