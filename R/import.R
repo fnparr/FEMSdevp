@@ -84,7 +84,7 @@ riskFactors_df2list <- function(riskFactors_df){
 #    contractType; object <- new("contractType)
 #    constructors will set isStructured but not populate terms or legs
 #    if isStructured: insertLegs
-#    insertTerms ( both simple and strutured cases )
+#    insertTerms ( both simple and structured cases )
 # *************************************
 datarow2Contract<- function(terms_df, legs_df,irow){
   contractTypeName <- longName(tolower(terms_df$contractType[irow]))
