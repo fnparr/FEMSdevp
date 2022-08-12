@@ -20,8 +20,10 @@
 # issue: > library(TimeSeries) if not found
 
 # initial test T1: clear R environment, load FEMSdev create sample Portfolio
-# 1.  install required librries, clear environment, load all sourcefiles,
+# 1.  install required libraries, clear environment, load all sourcefiles,
 #     initialize  global constants  Actus Server URL, Date_Term_Names etc
+
+
 rm(list= ls())
 source("R/Initialize.R")
 # load functions, setup the global environment , serverURL, Date_Term_Names, ..
@@ -43,9 +45,7 @@ ptf2 <- samplePortfolio(optionsDataFile,riskFactorsDataFile)
 ptf3 <- samplePortfolio(annuityDataFile,riskFactorsDataFile)
 
 # ************** Notes on Portfolio import function above *********
-# validate Portfolio create and initialization using samplePortfolio()
-# this function: (1) is defined in the devtest section of Portfolio.R
-# (2) works with Bond and with Option sample contracts (3)creates a sample
+# validate Portfolio create and initialization using samplePortfolio()@# this function: (1) is defined in the devtest section of Portfolio.R
 # Portfolio with contracts from the named input csv file (3) also creates
 # and sets at portfolio RFConnecter MOC time series data for Reference
 # YC_EA_AAA (used by Bond contracts ) and AAPL used by Options Contracts
