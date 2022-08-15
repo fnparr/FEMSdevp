@@ -17,6 +17,3 @@ initialize object env <- setup()
 functions in the package will use env
 inspect the code in Initialize.r::setup change for different ACTUS url
 }
-\examples{
-env <- setup( )
-}

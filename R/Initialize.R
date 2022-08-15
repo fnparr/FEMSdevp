@@ -19,8 +19,6 @@ library(httr)
 #' @importFrom methods new
 #' @return  A reference to S4 Class Environment ACTUS server url set
 #'
-#' @examples
-#' env <- setup( )
 setup <- function(){
   # initialize globalenvironment
   print (paste0("*** Setting Actus Server URL to ","http://ractus.ch:8080/"))
