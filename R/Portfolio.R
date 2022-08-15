@@ -7,14 +7,25 @@
 #    generateEvents(<portfolio>, <serverURL>)
 #    samplePortfolio(<contractDataFilename>)
 
-# TODO => FNP 13Apr2022 (1) convert samplePortfolio<cdfn>) to
-# Portfolio(<cdfn>,<mdfn>, <validate> ) ;  rfConn to <rf_list>
-#
-# concept: Portfolio contains all information needed to validata and issue
-#    a cashflow generation request to server running Actus core libraries
 # *********************************************************************
-
-# define the class Portfolio
+# class Portfolio
+# *************************************
+#' class Portfolio
+#'
+#' A Portfolio consists of a list of contracts and a list of riskFactors
+#' defining a scenario, A portfolio argument can be used as the input
+#' parameter for a generateEvents( ) request
+#'
+#' @import methods
+#' @importFrom methods new
+#' @export Portfolio
+#' @exportClass Portfolio
+#' @field contracts list.
+#' @field riskFactors list.
+#'
+#' @return  S4 object with class=Portfolio
+#'
+#' @examples { ptf1 <- Portfolio()}
 setRefClass("Portfolio",
             fields = list(
               contracts = "list",   # contracts are instances of ContractType
@@ -35,35 +46,53 @@ setMethod(f = "Portfolio", signature = c(),
              return(new("Portfolio"))
           })
 
-# *
 # allow creation of a portfolio with single contract in its contracts
 # useful to run a cash flow generation on a test contract
 setMethod(f = "Portfolio", signature = "ContractType",
           definition = function (contract) {
           ptf <- Portfolio()
           ptf$contracts = list(contract)
-          # for now assume no required riskFactors - will eventually add
           ptf$riskFactors <- list()
           return(ptf)
           })
 
 # ************************************************************************
-# generateEvents(<Portfolio>,<serverURL>)
-#
-# calls specified Actus server <serverURL> to generate cashflow events
-# for all contracts in a Portfolio using provided RiskFactor scenario data
-# from the env (list) uses serverURL and Date_Term_Names ( in preJcontract)
+# generateEvents(<Portfolio>)
+# *************************************
 
+#' generateEvents
+#'
+#'   The generateEvents(<Portfolio>, serverURL) function takes an initialized
+#'   S4 Portfolio object and a serverURL as inputs, constructs a JSON
+#'   representation of the Portfolio contents and calls out using https POST to
+#'   the Actus server at URL serverURL to generate a list of cashflow event
+#'   lists for each contract in the Portfolio using the portfolio's RiskFactor
+#'   scenario data.
+#'
+#' @param ptf    Portfolio S4 object initialized with contract and risk factors
+#' @param serverURL  character - identifies the ACTUS server to be called
+#' @return       List of generated cashflow results - one entry per contract
+#' @export
+#' @import    jsonlite
+#' @import    httr
+#' @examples {
+#'    serverURL <- "https://demo.actusfrf.org:8080/"
+#'    cdfn  <- "~/Rprojects/FEMSdevPkg01/data/BondPortfolio.csv"
+#'    rfdfn <- "~/Rprojects/FEMSdevPkg01/data/RiskFactors.csv"
+#'    ptf   <-  samplePortfolio(cdfn,rfdfn)
+#'    cfls  <- generateEvents(ptf,serverURL)
+#' }
+#'
 setGeneric(name = "generateEvents",
-           def = function(ptf,env){
+           def = function(ptf,serverURL){
              standardGeneric("generateEvents")
            })
 
-setMethod (f = "generateEvents", signature = c("Portfolio") ,
-          definition = function(ptf){
+setMethod (f = "generateEvents", signature = c("Portfolio","character") ,
+            definition = function(ptf,serverURL){
             # send contract and risk factors to the Server as valid JSON
 
-# Functional programming construction of preJson for Portfolio
+#  Functional programming construction of preJson for Portfolio
             contractDefs <- lapply(ptf$contracts,preJcontract)
             riskFactors <-  preJSONrfs(ptf$riskFactors)
             fin_list <- list(contracts = contractDefs,
@@ -73,7 +102,7 @@ setMethod (f = "generateEvents", signature = c("Portfolio") ,
             request_body <- toJSON(fin_list, pretty = TRUE, auto_unbox = FALSE)
 
             # issue POST command to have server generate cashflows
-            response_events <- POST(paste0(env$serverURL, "eventsBatch"),
+            response_events <- POST(paste0(serverURL, "eventsBatch"),
                                     body = request_body,
                                     content_type_json())
             response_content <- content(response_events)
@@ -86,14 +115,27 @@ setMethod (f = "generateEvents", signature = c("Portfolio") ,
 
 # ************************************************************
 # samplePortfolio(contractDataFileName)  cdfn  FNP 13 April 2022
-#  builds sample portfolio object using cdfn contractDataFileName and
-#  rfdfn riskFactorDataFileName - both are csv files
-#   tested data/BondPortfolio_dev.csv, data/OptionsPortfolio_dev.csv
-#   => toDO : add rfdfn
 # ************************************************************
+#' samplePortFolio
+#'
+#' samplePortfolio ( cdfn, rdfn ) takes as input a contracts-data-filepath and
+#'     riskfactor- data-filepath, reads this data and returns an initialized
+#'     Portfolio object with contracts and risk factors from these csv files.
+#' @param cdfn      character string -  a contract-data-filepath
+#' @param rfdfn     character string -  a riskfactor-data-filepath
+#'
+#' @return   Portfolio s4 object initialized with the data from the input files
+#' @export
+#'
+#' @examples {
+#'    cdfn  <- "~/Rprojects/FEMSdevPkg01/data/BondPortfolio.csv"
+#'    rfdfn <- "~/Rprojects/FEMSdevPkg01/data/RiskFactors.csv"
+#'    ptf <- samplePortfolio(cdfn,rfdfn)
+#'    }
+#'
 samplePortfolio <- function(cdfn, rfdfn) {
-  ptf <- Portfolio()            # create portfolio object no agtributes set
-                                # read in contract and riskFactor date from
+  ptf <- Portfolio()            # create portfolio object no attributes set
+                                # read in contract and riskFactor data from
                                 # named files; convert to lists of contract
                                 # and riskFactor objects
                                 # riskfactors first - contract.moc valid check

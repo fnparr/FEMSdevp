@@ -11,6 +11,9 @@
 #' not intended to create instances of it. It's use is to
 #' serve as parent to various implementations of ACTUS CTs as
 #' a means for designing method-inheritance.'
+#'
+#' @import methods
+#' @importFrom methods new
 
 # Introduces ContractType refClass,  terms, RF, event, val -Eng
 #  CT() generic constructor
@@ -90,16 +93,24 @@ preJcontract <- function(contract){
 
 # **************************************
 # preJtermList(term) builds preJSON list of lists for a contract term List
-# uses (constant) Date_Term_Names from the global environment
+# initializes and uses a (constant) list of  Date_Term_Names
 #
 preJtermList <- function(terms){
+  Date_Term_Names <- c(
+    "statusDate","contractDealDate","initialExchangeDate",
+    "maturityDate","cycleAnchorDateOfInterestCalculationBase",
+    "amortizationDate","contractDealDate","cycleAnchorDateOfPrincipalRedemption",
+    "arrayCycleAnchorDateOfPrincipalRedemption","purchaseDate",
+    "terminationDate","cycleAnchorDateOfScalingIndex",
+    "cycleAnchorDateOfRateReset","cycleAnchorDateOfInterestPayment",
+    "capitalizationEndDate")
   dateTerms <- terms[sapply(names(terms),
-                            function(x){x %in% env$Date_Term_Names})]
+                            function(x){x %in% Date_Term_Names})]
   nonDateTerms <- terms[sapply(names(terms),
-                               function(x){!(x %in% env$Date_Term_Names)})]
-  # start with nonDate terms unbox each atomic value
-  outJlist <- lapply(nonDateTerms, function(x){unbox(x)})
-  # append date terms converting to JSON dates and unboxing
-  outJlist <- append(outJlist, lapply(dateTerms, function(x){unbox(paste0(x,"T00:00:00"))}))
+                               function(x){!(x %in% Date_Term_Names)})]
+  # start with nonDate terms jsonlite::unbox each atomic value
+  outJlist <- lapply(nonDateTerms, function(x){jsonlite::unbox(x)})
+  # append date terms converting to JSON dates and jsonlite::unboxing
+  outJlist <- append(outJlist, lapply(dateTerms, function(x){jsonlite::unbox(paste0(x,"T00:00:00"))}))
   return(outJlist)
 }

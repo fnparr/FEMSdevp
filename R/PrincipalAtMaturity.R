@@ -7,6 +7,9 @@
 # defines: PrincipalAtMaturity refClass  - extends ContractType
 # introduces : Pam() null constructor , PrincipalAtMaturiy() constructor
 
+#' @import methods
+#' @importFrom methods new
+
 setRefClass("PrincipalAtMaturity",
             contains = "ContractType")
 

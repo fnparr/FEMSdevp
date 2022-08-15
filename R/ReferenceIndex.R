@@ -33,6 +33,11 @@
 # valueAt(ind, "2016-01-01")
 # valueAt(ind, c("2016-01-01", "2018-07-01", "2018-07-01"))
 
+#' @include RiskFactor.R
+#' @import methods
+#' @importFrom methods new
+#' @import timeSeries
+#'
 setRefClass("ReferenceIndex", contains = "RiskFactor",
             fields = list())
 

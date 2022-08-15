@@ -13,10 +13,26 @@
 # types such as  MarketIndex, YieldCurve .
 #
 
+#' Class RiskFactor
+#'
+#'  This class is only used in a virtual sense in that it is
+#'  not intended to create instances of it. It's use is to
+#'  serve as parent to various implementations of Risk Factor
+#'  types such as  MarketIndex, YieldCurve .
+#'
+#' @field label character.
+#' @field base numeric.
+#' @field data timeSeries.
+#'
+#' @return  S4 object class RiskFactor
+#' @import methods
+#' @importFrom methods new
+#' @exportClass RiskFactor
+#'
 setRefClass("RiskFactor",
             fields = list(label = "character",
                           base  = "numeric",
-                          data = "timeSeries"
+                          data =  "timeSeries"
             ))
 
 setGeneric(name = "RF",
@@ -45,7 +61,7 @@ as.timeSeries.RiskFactor <- function(x) {return(x$data) }
 # preJSONts(), preJSONrf(), preJSONrfc() these functions map
 #     risk factor elements to a preJSON form where calling
 #     jsonlite::toJSON(preJSONrfc(rfc) , dataframe = "rows")
-#     will genertate valid Actus JSON for riskfactors; R dataframes
+#     will generate valid Actus JSON for riskfactors; R dataframes
 #     map to JSON [ ] sequences; R lists map to JSON { } records but
 #     need unbox( ) for singleton values
 #     timeSeries optimizes times, no renaming time col etc
@@ -57,14 +73,15 @@ as.timeSeries.RiskFactor <- function(x) {return(x$data) }
 # ************************************************************
 
 preJSONts <- function(ts) {
-  return (data.frame(time = paste0(format(time(ts)),"T00:00:00"),
+  return (data.frame(time = paste0(format(timeSeries::time(ts)),"T00:00:00"),
                      value = ts$value)
   )
 }
 # result should convert to JSON with toJSON(preJSONrf(rf),dataframe="rows")
 
 preJSONrf <- function(rf) {
-  return ( list(marketObjectCode= unbox(rf$label), base = unbox(rf$base),
+  return ( list(marketObjectCode= jsonlite::unbox(rf$label),
+                base = jsonlite::unbox(rf$base),
                 data = preJSONts(rf$data)
                 )
   )

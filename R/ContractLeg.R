@@ -5,7 +5,9 @@
 # has been tested (by FNP) only for underlier marketObjectCode legs -
 # Underlier stock Contract may also be feasible but more validation needed
 #  ************************************************************************
-
+#' @import methods
+#' @importFrom methods new
+#' @importFrom methods new
 setRefClass("ContractLeg",
             fields = list(marketObjectCode = "character",
                           referenceType    = "character",
@@ -42,8 +44,8 @@ preJSONcleglist <- function(cleglst) {
 
 # preJSONcleg prepares cleg for:  { "object" : ... etc ... }
 preJSONcleg <- function(cleg) {
-    clegj <- list(object= list(marketObjectCode = unbox(cleg$marketObjectCode)),
-                  referenceType = unbox(cleg$referenceType),
-                  referenceRole = unbox(cleg$referenceRole))
+    clegj <- list(object= list(marketObjectCode = jsonlite::unbox(cleg$marketObjectCode)),
+                  referenceType = jsonlite::unbox(cleg$referenceType),
+                  referenceRole = jsonlite::unbox(cleg$referenceRole))
     return(clegj)
 }

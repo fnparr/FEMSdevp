@@ -15,7 +15,7 @@ contractFile2dataframe <- function(fname, sep = ",") {
    # read csv ignores and strips '"' and dayCountConvention has 30E360 value
    # which gets read as numeric = Inf.
    # we assume all contract csv files will have a dayCountConvention column
-   df = read.csv(fname, colClasses = c(dayCountConvention = "character"))
+   df = utils::read.csv(fname, colClasses = c(dayCountConvention = "character"))
    # convert all missing data into text null
    df[is.na(df)] <- "NULL"
    return(df)
@@ -23,11 +23,10 @@ contractFile2dataframe <- function(fname, sep = ",") {
 
 riskFile2dataframe <- function(fname, sep = ","){
   # this read.csv works for csv with no dayCountConvention column. Warning
-  df = read.csv(fname)
+  df = utils::read.csv(fname)
   # convert all missing data into text null
   df[is.na(df)] <- "NULL"
   return(df)
-
 }
 
 # ************************************
